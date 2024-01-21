@@ -4,18 +4,17 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
+
 import java.util.Date;
 
 @Setter
 @Getter
 @Entity
-public class Cards {
-
+public class Card {
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
 
     @NotBlank
     @NotNull
@@ -41,7 +40,6 @@ public class Cards {
     @Size(max = 255)
     @NotNull
     private String currencyCode;
-
 
     @NotNull
     @Temporal(TemporalType.DATE)

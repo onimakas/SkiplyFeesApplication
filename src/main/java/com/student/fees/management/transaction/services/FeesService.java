@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface FeesService {
     Fees createFees(Fees fees);
-    Fees updateFees(Long feeId, Fees fee);
+    Fees updateFees(Long feeId, Fees fees);
     Optional<Fees> getFeesById(Long id);
     List<Fees> getAllFees();
     void deleteFees(Long id);
