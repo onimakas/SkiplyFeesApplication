@@ -1,0 +1,13 @@
+package com.student.fees.management.SkiplyFeesCollection;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class SkiplyFeesCollectionApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+}
