@@ -10,46 +10,48 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.springframework.http.ResponseEntity.status;
 
 
 @RestControllerAdvice
 public class FeesTransactionExceptionHandler{
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleAllExceptions(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-
+    public ResponseEntity<ErrorDetails> handleAllExceptions(Exception ex) {
+        return status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorDetails(LocalDateTime.now(), ex.getMessage(), null));
     }
 
     @ExceptionHandler(FeesNotFoundException.class)
-    public ResponseEntity<String> handleFeesNotFoundException(FeesNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-
-
+    public ResponseEntity<ErrorDetails> handleFeesNotFoundException(FeesNotFoundException ex) {
+        return status(HttpStatus.NOT_FOUND)
+                .body(new ErrorDetails(LocalDateTime.now(), ex.getMessage(), null));
     }
 
     @ExceptionHandler(FeesPaymentNotFoundException.class)
     public ResponseEntity<String> handleFeesPaymentNotFoundException(FeesPaymentNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        return status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 
 
     }
 
     @ExceptionHandler(TransactionNotFoundException.class)
     public ResponseEntity<String> handleStudentException(TransactionNotFoundException ex) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        return status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<String>> handleValidationException(MethodArgumentNotValidException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getValidationErrors(ex.getBindingResult()));
+        return status(HttpStatus.BAD_REQUEST).body(getValidationErrors(ex.getBindingResult()));
     }
 
     @ExceptionHandler(BindException.class)
     public ResponseEntity<List<String>> handleBindException(BindException ex, WebRequest request) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(getValidationErrors(ex.getBindingResult()));
+        return status(HttpStatus.BAD_REQUEST).body(getValidationErrors(ex.getBindingResult()));
     }
 
     private List<String> getValidationErrors(BindingResult bindingResult) {

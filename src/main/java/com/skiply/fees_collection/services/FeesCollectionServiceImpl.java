@@ -121,13 +121,13 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
 
     private void validateSchoolExists(FeesCollectionDto transactionDto) {
         schoolService.getSchoolById(transactionDto.getSchoolId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid School ID"));
+                .orElseThrow(() -> new SchoolNotFoundException("Invalid School ID" + transactionDto.getSchoolId()));
     }
 
     private void validatePaymentMode(FeesCollectionDto transactionDto) {
         if (transactionDto.getPaymentMode() == PaymentMode.CREDIT_CARD) {
             cardService.getCardById(transactionDto.getPaymentModeId())
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid Card ID"));
+                    .orElseThrow(() -> new InvalidCardIdException("Invalid Card ID" + transactionDto.getPaymentModeId()));
         }
     }
 
@@ -145,7 +145,7 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
 
     private Fees validateIndividualFees(FeesPaymentCreationDto feesDto, FeesCollectionDto transactionDto) {
         Fees fees = feesService.getFeesById(feesDto.getFeesId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid Fees ID in fees payment: " + feesDto.getFeesId()));
+                .orElseThrow(() -> new FeesNotFoundException("Invalid Fees ID in fees payment: " + feesDto.getFeesId()));
 
         if (!fees.getCurrencyCode().equals(transactionDto.getCurrencyCode())) {
             throw new CurrencyCodeMismatchException("Currency code mismatch between transaction and fees: " + feesDto.getFeesId());

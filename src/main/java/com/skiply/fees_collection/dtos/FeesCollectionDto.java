@@ -32,16 +32,14 @@ public class FeesCollectionDto {
     @NotNull
     private CurrencyCode currencyCode;
 
-    // PaymentModeDetails --> CardDetails implement, inheritance
-
     @NotNull
-    private PaymentMode paymentMode; // CREDIT_CARD
+    private PaymentMode paymentMode;
 
     @NotBlank
-    private String paymentModeId; // card id
+    private String paymentModeId;
 
     @NotBlank
-    private String paymentReferenceNumber;
+    private String referenceNumber;
 
     @NotNull
     @NotEmpty

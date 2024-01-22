@@ -1,6 +1,7 @@
 package com.skiply.fees_collection.services;
 
 import com.skiply.fees_collection.entities.Card;
+import com.skiply.fees_collection.exceptions.TransactionNotFoundException;
 import com.skiply.fees_collection.repositories.TransactionRepository;
 import com.skiply.fees_collection.entities.Transaction;
 import com.skiply.fees_collection.entities.TransactionStatus;
@@ -47,7 +48,7 @@ public class TransactionServiceImpl implements TransactionService {
             transactionRepository.save(transaction);
         }
         else {
-            throw new EntityNotFoundException("Transaction not found with ID: " + id);
+            throw new TransactionNotFoundException("Transaction not found with ID: " + id);
         }
     }
 

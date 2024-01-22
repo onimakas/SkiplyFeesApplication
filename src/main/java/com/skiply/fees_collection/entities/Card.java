@@ -11,7 +11,7 @@ import java.time.Instant;
 
 @Data
 @Entity
-@Table(name = "Cards")
+@Table(name = "cards")
 @AllArgsConstructor
 @NoArgsConstructor
 public class Card {
@@ -36,6 +36,7 @@ public class Card {
     @NotNull
     private String cardHolderName;
 
+    @Enumerated(EnumType.STRING)
     @NotNull
     private CurrencyCode currencyCode;
 

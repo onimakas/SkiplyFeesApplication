@@ -4,5 +4,5 @@ public enum FeesFrequency {
     MONTHLY,
     QUARTERLY,
     HALF_YEARLY,
-    YEARLY
+    ANNUAL
 }

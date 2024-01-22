@@ -12,7 +12,7 @@ import java.time.Instant;
 // Rename
 @Data
 @Entity
-@Table(name = "Fees")
+@Table(name = "fees")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Fees {

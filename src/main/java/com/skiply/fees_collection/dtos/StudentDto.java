@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -13,14 +15,14 @@ public class StudentDto {
     private String studentId;
     private String studentFirstName;
     private String studentLastName;
-    private LocalDateTime studentDob;
+    private LocalDate studentDob;
     private String studentGrade;
     private String parentEmail;
     private String parentMobileNumber;
     private String schoolId;
     private String schoolName;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private Boolean isDeleted = false;
-    private LocalDateTime deletedAt;
+    private Instant deletedAt;
 }

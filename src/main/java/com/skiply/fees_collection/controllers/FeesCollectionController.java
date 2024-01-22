@@ -33,12 +33,8 @@ public class FeesCollectionController {
             @ApiResponse(responseCode = "404", description = "receipt not found")
     })
     public ResponseEntity<FeesReceiptDto> getFeesReceipt(@PathVariable String id) {
-        try {
-            FeesReceiptDto feesReceipt = feesCollectionService.getFeesReceiptById(id);
-            return ResponseEntity.ok(feesReceipt);
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
+        FeesReceiptDto feesReceipt = feesCollectionService.getFeesReceiptById(id);
+        return ResponseEntity.ok(feesReceipt);
     }
 
     @PostMapping("/collect")

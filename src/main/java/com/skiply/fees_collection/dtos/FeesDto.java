@@ -13,7 +13,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeesDto {
-    private Long id;
+    private String id;
     private String grade;
     private FeesType type;
     private FeesFrequency frequency;
