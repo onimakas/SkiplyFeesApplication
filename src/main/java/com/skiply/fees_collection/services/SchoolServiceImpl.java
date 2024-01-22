@@ -2,6 +2,7 @@ package com.skiply.fees_collection.services;
 
 import com.skiply.fees_collection.repositories.SchoolRepository;
 import com.skiply.fees_collection.entities.School;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,9 @@ public class SchoolServiceImpl implements SchoolService {
             school.setIsDeleted(true);
             school.setDeletedAt(Instant.now());
             schoolRepository.save(school);
+        }
+        else {
+            throw new EntityNotFoundException("School not found with ID: " + id);
         }
     }
 }

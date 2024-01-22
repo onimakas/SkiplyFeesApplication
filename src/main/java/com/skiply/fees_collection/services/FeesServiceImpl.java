@@ -6,6 +6,7 @@ import com.skiply.fees_collection.entities.Fees;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +21,9 @@ public class FeesServiceImpl implements FeesService {
 
     @Override
     public Fees createFees(Fees fees) {
+        fees.setCreatedAt(Instant.now());
+        fees.setUpdatedAt(Instant.now());
+        fees.setIsDeleted(false);
         return feesRepository.save(fees);
     }
 
@@ -60,7 +64,11 @@ public class FeesServiceImpl implements FeesService {
     public void deleteFees(String feesId) {
         Optional<Fees> optionalFees = feesRepository.findById(feesId);
         if (optionalFees.isPresent()) {
-            feesRepository.delete(optionalFees.get());
+            Fees fees = optionalFees.get();
+            fees.setIsDeleted(true);
+            fees.setDeletedAt(Instant.now());
+            fees.setUpdatedAt(Instant.now());
+            feesRepository.delete(fees);
         } else {
             throw new FeesNotFoundException("Fees not found with ID: " + feesId);
         }

@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionDetailsDto {
+public class FeesReceiptDto {
     private String id;
     private String grade;
     private String schoolId;

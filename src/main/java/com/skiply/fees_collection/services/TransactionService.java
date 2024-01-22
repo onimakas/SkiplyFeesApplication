@@ -12,6 +12,5 @@ public interface TransactionService {
 
     void delete(String id);
 
-//    List<Transaction> getAll(String studentId, String paymentModeId);
     List<Transaction> getAll();
 }

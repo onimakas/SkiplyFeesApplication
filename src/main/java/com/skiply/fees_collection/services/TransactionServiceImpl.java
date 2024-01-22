@@ -1,8 +1,10 @@
 package com.skiply.fees_collection.services;
 
+import com.skiply.fees_collection.entities.Card;
 import com.skiply.fees_collection.repositories.TransactionRepository;
 import com.skiply.fees_collection.entities.Transaction;
 import com.skiply.fees_collection.entities.TransactionStatus;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +39,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public void delete(String id) {
-        transactionRepository.deleteById(id);
+        Optional<Transaction> optionalTransaction = getById(id);
+        if (optionalTransaction.isPresent()) {
+            Transaction transaction = optionalTransaction.get();
+            transaction.setIsDeleted(true);
+            transaction.setDeletedAt(Instant.now());
+            transactionRepository.save(transaction);
+        }
+        else {
+            throw new EntityNotFoundException("Transaction not found with ID: " + id);
+        }
     }
 
     @Override

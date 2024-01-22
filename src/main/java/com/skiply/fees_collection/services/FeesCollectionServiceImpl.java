@@ -15,13 +15,12 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class TransactionManagementServiceImpl implements TransactionManagementService {
+public class FeesCollectionServiceImpl implements FeesCollectionService {
     private final TransactionService transactionService;
     private final FeesPaymentService feesPaymentService;
     private final CardService cardService;
     private final FeesService feesService;
     private final SchoolService schoolService;
-    private final TransactionValidationService transactionValidationService;
 
     private final TransactionMapper transactionMapper;
     private final FeesPaymentMapper feesPaymentMapper;
@@ -33,8 +32,8 @@ public class TransactionManagementServiceImpl implements TransactionManagementSe
 
     @Override
     @Transactional
-    public TransactionDetailsDto createTransaction(TransactionCreationDto transactionDto) {
-        transactionValidationService.validateTransactionCreationDto(transactionDto);
+    public FeesReceiptDto collectFees(FeesCollectionDto transactionDto) {
+        validateFeesCollectionRequest(transactionDto);
 
         Transaction transaction = transactionMapper.toTransaction(transactionDto);
         transaction = transactionService.save(transaction);
@@ -50,7 +49,7 @@ public class TransactionManagementServiceImpl implements TransactionManagementSe
     }
 
     @Override
-    public TransactionDetailsDto getTransactionDetailsById(String id) {
+    public FeesReceiptDto getFeesReceiptById(String id) {
         Optional<Transaction> transactionOptional = transactionService.getById(id);
         if (transactionOptional.isEmpty()) {
             // Handle the case where the transaction is not found. You could throw an exception or return null.
@@ -62,55 +61,35 @@ public class TransactionManagementServiceImpl implements TransactionManagementSe
     }
 
     @Override
-    public List<TransactionDetailsDto> getAllTransactions() {
+    public List<FeesReceiptDto> getAllFeesReceipts() {
         List<Transaction> transactions = transactionService.getAll();
-        List<TransactionDetailsDto> dtoList = new ArrayList<>();
+        List<FeesReceiptDto> dtoList = new ArrayList<>();
         for (Transaction transaction : transactions) {
-            TransactionDetailsDto transactionDetailsDto = buildTransactionDetailsDto(transaction);
-            dtoList.add(transactionDetailsDto);
+            FeesReceiptDto feesReceiptDto = buildTransactionDetailsDto(transaction);
+            dtoList.add(feesReceiptDto);
         }
 
         return dtoList;
     }
 
-    private TransactionDetailsDto buildTransactionDetailsDto(Transaction transaction) {
-        TransactionDetailsDto transactionDetailsDto = transactionMapper.toTransactionDetailsDto(transaction);
+    private FeesReceiptDto buildTransactionDetailsDto(Transaction transaction) {
+        FeesReceiptDto feesReceiptDto = transactionMapper.toFeesReceiptDto(transaction);
 
         Optional<StudentDto> studentOptional = studentServiceClient.getStudentDetailsById(transaction.getStudentId());
-        studentOptional.ifPresent(transactionDetailsDto::setStudentDetails);
+        studentOptional.ifPresent(feesReceiptDto::setStudentDetails);
 
         Optional<Card> cardOptional = cardService.getCardById(transaction.getPaymentModeId());
-        cardOptional.ifPresent(card -> transactionDetailsDto.setCardDetails(cardMapper.toCardDto(card)));
+        cardOptional.ifPresent(card -> feesReceiptDto.setCardDetails(cardMapper.toCardDto(card)));
 
         Optional<School> schoolOptional = schoolService.getSchoolById(transaction.getSchoolId());
-        schoolOptional.ifPresent(school -> transactionDetailsDto.setSchoolDetails(schoolMapper.toSchoolDto(school)));
+        schoolOptional.ifPresent(school -> feesReceiptDto.setSchoolDetails(schoolMapper.toSchoolDto(school)));
 
         List<FeesPayment> feesPaymentList = feesPaymentService.getByTransactionId(transaction.getId());
         List<FeesPaymentDto> feesPaymentDtos = this.mapFeesPaymentsToDtos(feesPaymentList);
-        transactionDetailsDto.setFeesPayments(feesPaymentDtos);
+        feesReceiptDto.setFeesPayments(feesPaymentDtos);
 
-        return transactionDetailsDto;
+        return feesReceiptDto;
     }
-
-//    public List<Transaction> getTransactionsWithFilters(String studentId, String paymentModeId) {
-//        return transactionService.findAll(buildSpecification(studentId, paymentModeId));
-//    }
-//
-//    private Specification<Transaction> buildSpecification(Long studentId, Long paymentModeId) {
-//        return (root, query, criteriaBuilder) -> {
-//            List<Predicate> predicates = new ArrayList<>();
-//
-//            if (studentId != null) {
-//                predicates.add(criteriaBuilder.equal(root.get("studentId"), studentId));
-//            }
-//
-//            if (paymentModeId != null) {
-//                predicates.add(criteriaBuilder.equal(root.get("paymentModeId"), paymentModeId));
-//            }
-//
-//            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-//        };
-//    }
 
     /**
      * Converts a list of {@link FeesPayment} entities to a list of {@link FeesPaymentDto}.
@@ -132,6 +111,63 @@ public class TransactionManagementServiceImpl implements TransactionManagementSe
                 })
                 .toList();
     }
+
+    private void validateFeesCollectionRequest(FeesCollectionDto feesCollectionDto) {
+//      Uncomment once data is seeded.
+        validateSchoolExists(feesCollectionDto);
+        validatePaymentMode(feesCollectionDto);
+        validateFeesPayments(feesCollectionDto);
+        validateStudentDetails(feesCollectionDto);
+    }
+
+    private void validateSchoolExists(FeesCollectionDto transactionDto) {
+        schoolService.getSchoolById(transactionDto.getStudentId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid School ID"));
+    }
+
+    private void validatePaymentMode(FeesCollectionDto transactionDto) {
+        if (transactionDto.getPaymentMode() == PaymentMode.CREDIT_CARD) {
+            cardService.getCardById(transactionDto.getPaymentModeId())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid Card ID"));
+        }
+    }
+
+    private void validateFeesPayments(FeesCollectionDto transactionDto) {
+        double totalFeesAmount = 0;
+        for (FeesPaymentCreationDto feesDto : transactionDto.getFeesPayments()) {
+            Fees fees = validateIndividualFees(feesDto, transactionDto);
+            totalFeesAmount += feesDto.getAmount() * feesDto.getQuantity();
+        }
+
+        if (totalFeesAmount != transactionDto.getAmount()) {
+            throw new IllegalArgumentException("Total amount does not match the sum of individual fees payments");
+        }
+    }
+
+    private Fees validateIndividualFees(FeesPaymentCreationDto feesDto, FeesCollectionDto transactionDto) {
+        Fees fees = feesService.getFeesById(feesDto.getFeesId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid Fees ID in fees payment: " + feesDto.getFeesId()));
+
+        if (!fees.getCurrencyCode().equals(transactionDto.getCurrencyCode())) {
+            throw new IllegalArgumentException("Currency code mismatch between transaction and fees: " + feesDto.getFeesId());
+        }
+
+        if (fees.isExpired()) {
+            throw new IllegalArgumentException("Fees is expired: " + feesDto.getFeesId());
+        }
+
+        return fees;
+    }
+
+    private void validateStudentDetails(FeesCollectionDto transactionDto) {
+        Optional<StudentDto> studentOptional = studentServiceClient.getStudentDetailsById(transactionDto.getStudentId());
+        if (studentOptional.isEmpty()) {
+            throw new IllegalArgumentException("Invalid Student ID");
+        }
+
+        StudentDto studentDto = studentOptional.get();
+        if (!studentDto.getStudentGrade().equals(transactionDto.getGrade())) {
+            throw new IllegalArgumentException("Student grade mismatch for transaction: " + transactionDto.getStudentId());
+        }
+    }
 }
-
-

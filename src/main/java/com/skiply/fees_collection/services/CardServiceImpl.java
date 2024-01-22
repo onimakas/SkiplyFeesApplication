@@ -2,6 +2,7 @@ package com.skiply.fees_collection.services;
 
 import com.skiply.fees_collection.repositories.CardRepository;
 import com.skiply.fees_collection.entities.Card;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,9 @@ public class CardServiceImpl implements CardService {
             card.setIsDeleted(true);
             card.setDeletedAt(Instant.now());
             cardRepository.save(card);
+        }
+        else {
+            throw new EntityNotFoundException("Card not found with ID: " + id);
         }
     }
 }

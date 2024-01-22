@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 
+// Rename
 @Data
 @Entity
 @Table(name = "Fees")

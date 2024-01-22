@@ -1,5 +1,7 @@
 package com.skiply.fees_collection.services;
 
+import com.skiply.fees_collection.entities.Fees;
+import com.skiply.fees_collection.exceptions.FeesNotFoundException;
 import com.skiply.fees_collection.repositories.FeesPaymentRepository;
 import com.skiply.fees_collection.entities.FeesPayment;
 import jakarta.persistence.EntityNotFoundException;
@@ -8,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -40,7 +43,16 @@ public class FeesPaymentServiceImpl implements FeesPaymentService {
 
     @Override
     public void delete(String id) {
-        feesPaymentRepository.deleteById(id);
+        Optional<FeesPayment> optionalFeesPayment = feesPaymentRepository.findById(id);
+        if (optionalFeesPayment.isPresent()) {
+            FeesPayment feesPayment = optionalFeesPayment.get();
+            feesPayment.setIsDeleted(true);
+            feesPayment.setDeletedAt(Instant.now());
+            feesPayment.setUpdatedAt(Instant.now());
+            feesPaymentRepository.save(feesPayment);
+        } else {
+            throw new FeesNotFoundException("FeesPayment not found with ID: " + id);
+        }
     }
 
     @Override

@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TransactionCreationDto {
+public class FeesCollectionDto {
     @NotBlank
     private String grade;
 
@@ -32,14 +32,16 @@ public class TransactionCreationDto {
     @NotNull
     private CurrencyCode currencyCode;
 
+    // PaymentModeDetails --> CardDetails implement, inheritance
+
     @NotNull
-    private PaymentMode paymentMode;
+    private PaymentMode paymentMode; // CREDIT_CARD
 
     @NotBlank
-    private String paymentModeId;
+    private String paymentModeId; // card id
 
     @NotBlank
-    private String referenceNumber;
+    private String paymentReferenceNumber;
 
     @NotNull
     @NotEmpty

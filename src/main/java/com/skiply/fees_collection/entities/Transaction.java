@@ -11,9 +11,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.Instant;
 
+//Entity diagram
 @Data
 @Entity
-@Table(name = "Transactions")
+@Table(name = "transactions")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Transaction {
