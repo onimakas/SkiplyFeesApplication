@@ -2,9 +2,9 @@ package com.skiply.fees_collection.services;
 
 import com.skiply.fees_collection.dtos.*;
 import com.skiply.fees_collection.entities.*;
+import com.skiply.fees_collection.exceptions.*;
 import com.skiply.fees_collection.mappers.*;
 import com.skiply.fees_collection.clients.StudentServiceClient;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,7 +53,7 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
         Optional<Transaction> transactionOptional = transactionService.getById(id);
         if (transactionOptional.isEmpty()) {
             // Handle the case where the transaction is not found. You could throw an exception or return null.
-            throw new EntityNotFoundException("Transaction not found with ID: " + id);
+            throw new TransactionNotFoundException("Transaction not found with ID: " + id);
         }
 
         Transaction transaction = transactionOptional.get();
@@ -113,7 +113,6 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
     }
 
     private void validateFeesCollectionRequest(FeesCollectionDto feesCollectionDto) {
-//      Uncomment once data is seeded.
         validateSchoolExists(feesCollectionDto);
         validatePaymentMode(feesCollectionDto);
         validateFeesPayments(feesCollectionDto);
@@ -121,7 +120,7 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
     }
 
     private void validateSchoolExists(FeesCollectionDto transactionDto) {
-        schoolService.getSchoolById(transactionDto.getStudentId())
+        schoolService.getSchoolById(transactionDto.getSchoolId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid School ID"));
     }
 
@@ -140,7 +139,7 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
         }
 
         if (totalFeesAmount != transactionDto.getAmount()) {
-            throw new IllegalArgumentException("Total amount does not match the sum of individual fees payments");
+            throw new MismatchTransactionAmountException("Total amount does not match the sum of individual fees payments");
         }
     }
 
@@ -149,11 +148,11 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid Fees ID in fees payment: " + feesDto.getFeesId()));
 
         if (!fees.getCurrencyCode().equals(transactionDto.getCurrencyCode())) {
-            throw new IllegalArgumentException("Currency code mismatch between transaction and fees: " + feesDto.getFeesId());
+            throw new CurrencyCodeMismatchException("Currency code mismatch between transaction and fees: " + feesDto.getFeesId());
         }
 
         if (fees.isExpired()) {
-            throw new IllegalArgumentException("Fees is expired: " + feesDto.getFeesId());
+            throw new FeesExpiryException("Fees is expired: " + feesDto.getFeesId());
         }
 
         return fees;
@@ -162,12 +161,12 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
     private void validateStudentDetails(FeesCollectionDto transactionDto) {
         Optional<StudentDto> studentOptional = studentServiceClient.getStudentDetailsById(transactionDto.getStudentId());
         if (studentOptional.isEmpty()) {
-            throw new IllegalArgumentException("Invalid Student ID");
+            throw new InvalidStudentIdException("Invalid Student ID");
         }
 
         StudentDto studentDto = studentOptional.get();
         if (!studentDto.getStudentGrade().equals(transactionDto.getGrade())) {
-            throw new IllegalArgumentException("Student grade mismatch for transaction: " + transactionDto.getStudentId());
+            throw new StudentGradeMismatchException("Student grade mismatch for transaction: " + transactionDto.getStudentId());
         }
     }
 }

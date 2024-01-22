@@ -4,8 +4,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-public class FeesNotFoundException extends RuntimeException {
-    public FeesNotFoundException(String message) {
+public class FeesExpiryException extends RuntimeException {
+
+    public FeesExpiryException(String message) {
         super(message);
     }
+
 }

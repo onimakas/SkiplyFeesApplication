@@ -13,7 +13,7 @@ public class StudentServiceClient {
     private final WebClient webClient;
 
     public StudentServiceClient(WebClient.Builder webClientBuilder) {
-        this.webClient = webClientBuilder.baseUrl("http://localhost:8080/api").build();
+        this.webClient = webClientBuilder.baseUrl("http://localhost:8080/api/v1").build();
     }
 
     public Optional<StudentDto> getStudentDetailsById(String studentId) {

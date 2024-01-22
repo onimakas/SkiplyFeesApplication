@@ -1,5 +1,6 @@
 package com.skiply.fees_collection.services;
 
+import com.skiply.fees_collection.exceptions.CardNotFoundException;
 import com.skiply.fees_collection.repositories.CardRepository;
 import com.skiply.fees_collection.entities.Card;
 import jakarta.persistence.EntityNotFoundException;
@@ -47,7 +48,7 @@ public class CardServiceImpl implements CardService {
             cardRepository.save(card);
         }
         else {
-            throw new EntityNotFoundException("Card not found with ID: " + id);
+            throw new CardNotFoundException("Card not found with ID: " + id);
         }
     }
 }
