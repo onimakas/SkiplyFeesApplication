@@ -23,27 +23,75 @@ public class FeesTransactionExceptionHandler{
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetails> handleAllExceptions(Exception ex) {
         return status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new ErrorDetails(LocalDateTime.now(), ex.getMessage(), null));
+                .body(new ErrorDetails(ex.getMessage(), ex.toString()));
+    }
+    @ExceptionHandler(CardNotFoundException.class)
+    public ResponseEntity<ErrorDetails> handleCardNotFoundException(CardNotFoundException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+    @ExceptionHandler(CurrencyCodeMismatchException.class)
+    public ResponseEntity<ErrorDetails> handleCurrencyCodeMismatchException(CurrencyCodeMismatchException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+    @ExceptionHandler(InvalidFeeIdInFeePaymentsException.class)
+    public ResponseEntity<ErrorDetails> handleInvalidFeeIdInFeePaymentsException(InvalidFeeIdInFeePaymentsException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    @ExceptionHandler(InvalidStudentIdException.class)
+    public ResponseEntity<ErrorDetails> handleInvalidStudentIdException(InvalidStudentIdException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    @ExceptionHandler(MismatchTransactionAmountException.class)
+    public ResponseEntity<ErrorDetails> handleMismatchTransactionAmountException(MismatchTransactionAmountException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+    @ExceptionHandler(StudentGradeMismatchException.class)
+    public ResponseEntity<ErrorDetails> handleStudentGradeMismatchException(StudentGradeMismatchException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+    @ExceptionHandler(WebClientStudentRetrieveException.class)
+    public ResponseEntity<ErrorDetails> handleWebClientStudentRetrieveException(WebClientStudentRetrieveException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+    @ExceptionHandler(SchoolNotFoundException.class)
+    public ResponseEntity<ErrorDetails> handleSchoolNotFoundException(SchoolNotFoundException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+    @ExceptionHandler(InvalidCardIdException.class)
+    public ResponseEntity<ErrorDetails> handleInvalidCardIdException(InvalidCardIdException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+    @ExceptionHandler(FeesExpiryException.class)
+    public ResponseEntity<ErrorDetails> handleFeesExpiryException(FeesExpiryException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
     @ExceptionHandler(FeesNotFoundException.class)
     public ResponseEntity<ErrorDetails> handleFeesNotFoundException(FeesNotFoundException ex) {
-        return status(HttpStatus.NOT_FOUND)
-                .body(new ErrorDetails(LocalDateTime.now(), ex.getMessage(), null));
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
-
     @ExceptionHandler(FeesPaymentNotFoundException.class)
-    public ResponseEntity<String> handleFeesPaymentNotFoundException(FeesPaymentNotFoundException ex) {
-        return status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-
-
+    public ResponseEntity<ErrorDetails> handleFeesPaymentNotFoundException(FeesPaymentNotFoundException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
-
     @ExceptionHandler(TransactionNotFoundException.class)
-    public ResponseEntity<String> handleStudentException(TransactionNotFoundException ex) {
-        return status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    public ResponseEntity<ErrorDetails> handleTransactionNotFoundException(TransactionNotFoundException ex) {
+        ErrorDetails error = new ErrorDetails(ex.getMessage(),ex.toString());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<String>> handleValidationException(MethodArgumentNotValidException ex) {
         return status(HttpStatus.BAD_REQUEST).body(getValidationErrors(ex.getBindingResult()));

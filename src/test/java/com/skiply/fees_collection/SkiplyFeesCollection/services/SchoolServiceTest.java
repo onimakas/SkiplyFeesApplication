@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.skiply.fees_collection.exceptions.SchoolNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,13 +53,13 @@ class SchoolServiceTest {
         String schoolId = "12345";
         School school = new School();
         school.setSchoolId(schoolId);
-        when(schoolRepository.findById(schoolId)).thenReturn(Optional.of(school));
+        when(schoolRepository.findBySchoolIdAndDeletedAtIsNull(schoolId)).thenReturn(Optional.of(school));
 
         Optional<School> retrievedSchool = schoolService.getSchoolById(schoolId);
 
         assertTrue(retrievedSchool.isPresent());
         assertEquals(schoolId, retrievedSchool.get().getSchoolId());
-        verify(schoolRepository, times(1)).findById(schoolId);
+        verify(schoolRepository, times(1)).findBySchoolIdAndDeletedAtIsNull(schoolId);
     }
 
     @Test
@@ -66,13 +67,13 @@ class SchoolServiceTest {
         List<School> schools = new ArrayList<>();
         schools.add(new School());
         schools.add(new School());
-        when(schoolRepository.findAll()).thenReturn(schools);
+        when(schoolRepository.findAllByDeletedAtIsNull()).thenReturn(schools);
 
         List<School> retrievedSchools = schoolService.getAllSchools();
 
         assertNotNull(retrievedSchools);
         assertEquals(2, retrievedSchools.size());
-        verify(schoolRepository, times(1)).findAll();
+        verify(schoolRepository, times(1)).findAllByDeletedAtIsNull();
     }
 
     @Test
@@ -80,7 +81,7 @@ class SchoolServiceTest {
         String schoolId = "12345";
         School schoolToDelete = new School();
         schoolToDelete.setSchoolId(schoolId);
-        when(schoolRepository.findById(schoolId)).thenReturn(Optional.of(schoolToDelete));
+        when(schoolRepository.findBySchoolIdAndDeletedAtIsNull(schoolId)).thenReturn(Optional.of(schoolToDelete));
 
         schoolService.deleteSchool(schoolId);
 
@@ -92,8 +93,8 @@ class SchoolServiceTest {
     @Test
     void testDeleteSchoolNotFound() {
         String nonExistentSchoolId = "99999"; // Assuming this ID does not exist in the database
-        when(schoolRepository.findById(nonExistentSchoolId)).thenReturn(Optional.empty());
+        when(schoolRepository.findBySchoolIdAndDeletedAtIsNull(nonExistentSchoolId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> schoolService.deleteSchool(nonExistentSchoolId));
+        assertThrows(SchoolNotFoundException.class, () -> schoolService.deleteSchool(nonExistentSchoolId));
     }
 }

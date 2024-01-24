@@ -22,7 +22,7 @@ public class FeesPaymentServiceImpl implements FeesPaymentService {
 
     @Override
     public FeesPayment getById(String id) {
-        return feesPaymentRepository.findById(id)
+        return feesPaymentRepository.findByIdAndDeletedAtIsNull(id)
                 .orElseThrow(() -> new FeesPaymentNotFoundException("FeePayments not found with id: " + id));
     }
 
@@ -41,7 +41,7 @@ public class FeesPaymentServiceImpl implements FeesPaymentService {
 
     @Override
     public void delete(String id) {
-        Optional<FeesPayment> optionalFeesPayment = feesPaymentRepository.findById(id);
+        Optional<FeesPayment> optionalFeesPayment = feesPaymentRepository.findByIdAndDeletedAtIsNull(id);
         if (optionalFeesPayment.isPresent()) {
             FeesPayment feesPayment = optionalFeesPayment.get();
             feesPayment.setIsDeleted(true);
@@ -55,6 +55,6 @@ public class FeesPaymentServiceImpl implements FeesPaymentService {
 
     @Override
     public List<FeesPayment> getAll() {
-        return feesPaymentRepository.findAll();
+        return feesPaymentRepository.findAllByDeletedAtIsNull();
     }
 }

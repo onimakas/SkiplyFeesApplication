@@ -29,12 +29,12 @@ public class SchoolServiceImpl implements SchoolService {
 
     @Override
     public Optional<School> getSchoolById(String id) {
-        return schoolRepository.findById(id);
+        return schoolRepository.findBySchoolIdAndDeletedAtIsNull(id);
     }
 
     @Override
     public List<School> getAllSchools() {
-        return schoolRepository.findAll();
+        return schoolRepository.findAllByDeletedAtIsNull();
     }
 
     @Override

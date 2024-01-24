@@ -30,12 +30,12 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Optional<Card> getCardById(String id) {
-        return cardRepository.findById(id);
+        return cardRepository.findByIdAndDeletedAtIsNull(id);
     }
 
     @Override
     public List<Card> getAllCards() {
-        return cardRepository.findAll();
+        return cardRepository.findAllByDeletedAtIsNull();
     }
 
     @Override

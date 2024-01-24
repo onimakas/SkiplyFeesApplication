@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.skiply.fees_collection.exceptions.TransactionNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -54,13 +55,13 @@ class TransactionServiceTest {
         String transactionId = "12345";
         Transaction transaction = new Transaction();
         transaction.setId(transactionId);
-        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transaction));
+        when(transactionRepository.findByIdAndDeletedAtIsNull(transactionId)).thenReturn(Optional.of(transaction));
 
         Optional<Transaction> retrievedTransaction = transactionService.getById(transactionId);
 
         assertTrue(retrievedTransaction.isPresent());
         assertEquals(transactionId, retrievedTransaction.get().getId());
-        verify(transactionRepository, times(1)).findById(transactionId);
+        verify(transactionRepository, times(1)).findByIdAndDeletedAtIsNull(transactionId);
     }
 
     @Test
@@ -68,13 +69,13 @@ class TransactionServiceTest {
         List<Transaction> transactions = new ArrayList<>();
         transactions.add(new Transaction());
         transactions.add(new Transaction());
-        when(transactionRepository.findAll()).thenReturn(transactions);
+        when(transactionRepository.findAllByDeletedAtIsNull()).thenReturn(transactions);
 
         List<Transaction> retrievedTransactions = transactionService.getAll();
 
         assertNotNull(retrievedTransactions);
         assertEquals(2, retrievedTransactions.size());
-        verify(transactionRepository, times(1)).findAll();
+        verify(transactionRepository, times(1)).findAllByDeletedAtIsNull();
     }
 
     @Test
@@ -82,7 +83,7 @@ class TransactionServiceTest {
         String transactionId = "12345";
         Transaction transactionToDelete = new Transaction();
         transactionToDelete.setId(transactionId);
-        when(transactionRepository.findById(transactionId)).thenReturn(Optional.of(transactionToDelete));
+        when(transactionRepository.findByIdAndDeletedAtIsNull(transactionId)).thenReturn(Optional.of(transactionToDelete));
 
         transactionService.delete(transactionId);
 
@@ -94,8 +95,8 @@ class TransactionServiceTest {
     @Test
     void testDeleteTransactionNotFound() {
         String nonExistentTransactionId = "99999"; // Assuming this ID does not exist in the database
-        when(transactionRepository.findById(nonExistentTransactionId)).thenReturn(Optional.empty());
+        when(transactionRepository.findByIdAndDeletedAtIsNull(nonExistentTransactionId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> transactionService.delete(nonExistentTransactionId));
+        assertThrows(TransactionNotFoundException.class, () -> transactionService.delete(nonExistentTransactionId));
     }
 }

@@ -24,7 +24,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Optional<Transaction> getById(String id) {
-        return transactionRepository.findById(id);
+        return transactionRepository.findByIdAndDeletedAtIsNull(id);
     }
 
     @Override
@@ -53,11 +53,11 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getAll() { return transactionRepository.findAll(); }
+    public List<Transaction> getAll() { return transactionRepository.findAllByDeletedAtIsNull(); }
 
 //    @Override
 //    public List<Transaction> getAll(String studentId, String paymentModeId) {
-//        return transactionRepository.findAll(buildSpecification(studentId, paymentModeId));
+//        return transactionRepository.findAllByDeletedAtIsNull(buildSpecification(studentId, paymentModeId));
 //    }
 //
 //    private Specification<Transaction> buildSpecification(String studentId, String paymentModeId) {

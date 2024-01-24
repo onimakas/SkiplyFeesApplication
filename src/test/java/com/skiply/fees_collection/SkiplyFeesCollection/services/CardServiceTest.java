@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.skiply.fees_collection.exceptions.CardNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,13 +54,13 @@ class CardServiceTest {
         String cardId = "12345";
         Card card = new Card();
         card.setId(cardId);
-        when(cardRepository.findById(cardId)).thenReturn(Optional.of(card));
+        when(cardRepository.findByIdAndDeletedAtIsNull(cardId)).thenReturn(Optional.of(card));
 
         Optional<Card> retrievedCard = cardService.getCardById(cardId);
 
         assertTrue(retrievedCard.isPresent());
         assertEquals(cardId, retrievedCard.get().getId());
-        verify(cardRepository, times(1)).findById(cardId);
+        verify(cardRepository, times(1)).findByIdAndDeletedAtIsNull(cardId);
     }
 
     @Test
@@ -67,13 +68,13 @@ class CardServiceTest {
         List<Card> cards = new ArrayList<>();
         cards.add(new Card());
         cards.add(new Card());
-        when(cardRepository.findAll()).thenReturn(cards);
+        when(cardRepository.findAllByDeletedAtIsNull()).thenReturn(cards);
 
         List<Card> retrievedCards = cardService.getAllCards();
 
         assertNotNull(retrievedCards);
         assertEquals(2, retrievedCards.size());
-        verify(cardRepository, times(1)).findAll();
+        verify(cardRepository, times(1)).findAllByDeletedAtIsNull();
     }
 
     @Test
@@ -81,7 +82,7 @@ class CardServiceTest {
         String cardId = "12345";
         Card card = new Card();
         card.setId(cardId);
-        when(cardRepository.findById(cardId)).thenReturn(Optional.of(card));
+        when(cardRepository.findByIdAndDeletedAtIsNull(cardId)).thenReturn(Optional.of(card));
 
         cardService.deleteCard(cardId);
 
@@ -93,30 +94,30 @@ class CardServiceTest {
     @Test
     void testGetCardByIdNotFound() {
         String nonExistentCardId = "99999";
-        when(cardRepository.findById(nonExistentCardId)).thenReturn(Optional.empty());
+        when(cardRepository.findByIdAndDeletedAtIsNull(nonExistentCardId)).thenReturn(Optional.empty());
 
         Optional<Card> retrievedCard = cardService.getCardById(nonExistentCardId);
 
         assertTrue(retrievedCard.isEmpty());
-        verify(cardRepository, times(1)).findById(nonExistentCardId);
+        verify(cardRepository, times(1)).findByIdAndDeletedAtIsNull(nonExistentCardId);
     }
 
     @Test
     void testGetAllCardsEmptyList() {
-        when(cardRepository.findAll()).thenReturn(Collections.emptyList());
+        when(cardRepository.findAllByDeletedAtIsNull()).thenReturn(Collections.emptyList());
 
         List<Card> retrievedCards = cardService.getAllCards();
 
         assertNotNull(retrievedCards);
         assertTrue(retrievedCards.isEmpty());
-        verify(cardRepository, times(1)).findAll();
+        verify(cardRepository, times(1)).findAllByDeletedAtIsNull();
     }
 
     @Test
     void testDeleteCardNotFound() {
         String nonExistentCardId = "99999";
-        when(cardRepository.findById(nonExistentCardId)).thenReturn(Optional.empty());
+        when(cardRepository.findByIdAndDeletedAtIsNull(nonExistentCardId)).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> cardService.deleteCard(nonExistentCardId));
+        assertThrows(CardNotFoundException.class, () -> cardService.deleteCard(nonExistentCardId));
     }
 }

@@ -1,3 +1,8 @@
+/**
+ * Service class that handles the collection of fees and retrieval of fees receipts.
+ * This class provides methods for collecting fees, retrieving fees receipts by ID or all receipts,
+ * and validating fee collection requests.
+ */
 package com.skiply.fees_collection.services;
 
 import com.skiply.fees_collection.dtos.*;
@@ -30,6 +35,21 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
 
     private final StudentServiceClient studentServiceClient;
 
+    /**
+     * Collects fees by creating a new transaction and saving individual fees payment objects in the database.
+     * Validates the fees collection request before processing.
+     *
+     * @param transactionDto The DTO containing the fees collection details.
+     * @return The fees receipt DTO.
+     * @throws SchoolNotFoundException        if the school ID provided in the request is invalid.
+     * @throws InvalidCardIdException          if the card ID provided in the request is invalid.
+     * @throws FeesNotFoundException           if the fees ID provided in the request is invalid.
+     * @throws MismatchTransactionAmountException if the total amount in the request does not match the sum of individual fees payments.
+     * @throws CurrencyCodeMismatchException   if there is a currency code mismatch between the transaction and the fees.
+     * @throws FeesExpiryException             if the fees has expired.
+     * @throws InvalidStudentIdException       if the student ID provided in the request is invalid.
+     * @throws StudentGradeMismatchException   if there is a mismatch between the student grade in the request and the actual student grade.
+     */
     @Override
     @Transactional
     public FeesReceiptDto collectFees(FeesCollectionDto transactionDto) {
@@ -48,6 +68,13 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
         return this.buildTransactionDetailsDto(transaction);
     }
 
+    /**
+     * Retrieves a fees receipt by its ID.
+     *
+     * @param id The ID of the fees receipt.
+     * @return The fees receipt DTO.
+     * @throws TransactionNotFoundException if the fees receipt with the given ID is not found.
+     */
     @Override
     public FeesReceiptDto getFeesReceiptById(String id) {
         Optional<Transaction> transactionOptional = transactionService.getById(id);
@@ -60,6 +87,11 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
         return this.buildTransactionDetailsDto(transaction);
     }
 
+    /**
+     * Retrieves all fees receipts.
+     *
+     * @return A list of fees receipt DTOs.
+     */
     @Override
     public List<FeesReceiptDto> getAllFeesReceipts() {
         List<Transaction> transactions = transactionService.getAll();
@@ -72,6 +104,12 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
         return dtoList;
     }
 
+    /**
+     * Builds a fees receipt DTO from a transaction entity.
+     *
+     * @param transaction The transaction entity.
+     * @return The fees receipt DTO.
+     */
     private FeesReceiptDto buildTransactionDetailsDto(Transaction transaction) {
         FeesReceiptDto feesReceiptDto = transactionMapper.toFeesReceiptDto(transaction);
 
@@ -112,6 +150,18 @@ public class FeesCollectionServiceImpl implements FeesCollectionService {
                 .toList();
     }
 
+    /**
+     * Validates the fees collection request.
+     *
+     * @param feesCollectionDto The fees collection request DTO.
+     * @throws SchoolNotFoundException        if the school ID provided in the request is invalid.
+     * @throws InvalidCardIdException          if the card ID provided in the request is invalid.
+     * @throws FeesNotFoundException           if the fees ID provided in the request is invalid.
+     * @throws MismatchTransactionAmountException if the total amount in the request does not match the sum of individual fees payments.
+     * @throws CurrencyCodeMismatchException   if there is a currency code mismatch between the transaction and the fees.
+     * @throws FeesExpiryException             if the fees has expired.
+     * @throws InvalidStudentIdException       if the student ID provided in the request is invalid.
+     * @throws StudentGradeMismatchException   if there is a mismatch between the student*/
     private void validateFeesCollectionRequest(FeesCollectionDto feesCollectionDto) {
         validateSchoolExists(feesCollectionDto);
         validatePaymentMode(feesCollectionDto);
