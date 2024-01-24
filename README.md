@@ -21,8 +21,10 @@ To run this project, make sure you have the following prerequisites installed on
 2. Install IntelliJ IDEA(latest version)   
 3. Install Postman(latest version)  
 4. git clone https://github.com/onimakas/SkiplyFeesApplication.git or download it into zip and unzip it to your local.   
-5. Open project in IntelliJ IDEA and run locally.  
-6. The application should now be up and running on http://localhost:9000/api/v1/fees  
+5. Open project in IntelliJ IDEA.
+6. Enable Lombok Annotation processing in Intellij IDEA while building the application.
+7. Run the application in Intellij.
+8. The application should now be up and running on http://localhost:9000/api/v1/fees  
 
 ## API documentation
 The Open API documentation links are as follows: 
