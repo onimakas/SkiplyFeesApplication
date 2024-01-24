@@ -1,8 +1,3 @@
-/**
- * Service class that handles the collection of fees and retrieval of fees receipts.
- * This class provides methods for collecting fees, retrieving fees receipts by ID or all receipts,
- * and validating fee collection requests.
- */
 package com.skiply.fees_collection.services;
 
 import com.skiply.fees_collection.dtos.*;
@@ -18,6 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service class that handles the collection of fees and retrieval of fees receipts.
+ * This class provides methods for collecting fees, retrieving fees receipts by ID or all receipts,
+ * and validating fee collection requests.
+ */
 @Service
 @AllArgsConstructor
 public class FeesCollectionServiceImpl implements FeesCollectionService {

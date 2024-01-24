@@ -3,7 +3,6 @@ package com.skiply.fees_collection.services;
 import com.skiply.fees_collection.exceptions.CardNotFoundException;
 import com.skiply.fees_collection.repositories.CardRepository;
 import com.skiply.fees_collection.entities.Card;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,12 +29,12 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public Optional<Card> getCardById(String id) {
-        return cardRepository.findByIdAndDeletedAtIsNull(id);
+        return cardRepository.findByIdAndIsDeletedIsFalse(id);
     }
 
     @Override
     public List<Card> getAllCards() {
-        return cardRepository.findAllByDeletedAtIsNull();
+        return cardRepository.findAllByIsDeletedIsFalse();
     }
 
     @Override

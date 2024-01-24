@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.skiply.fees_collection.exceptions.FeesNotFoundException;
 import com.skiply.fees_collection.exceptions.FeesPaymentNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +17,6 @@ import org.mockito.MockitoAnnotations;
 import com.skiply.fees_collection.entities.FeesPayment;
 import com.skiply.fees_collection.repositories.FeesPaymentRepository;
 import com.skiply.fees_collection.services.FeesPaymentServiceImpl;
-import jakarta.persistence.EntityNotFoundException;
 
 class FeesPaymentServiceTest {
     @InjectMocks
@@ -37,19 +35,19 @@ class FeesPaymentServiceTest {
         String paymentId = "12345";
         FeesPayment payment = new FeesPayment();
         payment.setId(paymentId);
-        when(feesPaymentRepository.findByIdAndDeletedAtIsNull(paymentId)).thenReturn(Optional.of(payment));
+        when(feesPaymentRepository.findByIdAndIsDeletedIsFalse(paymentId)).thenReturn(Optional.of(payment));
 
         FeesPayment retrievedPayment = feesPaymentService.getById(paymentId);
 
         assertNotNull(retrievedPayment);
         assertEquals(paymentId, retrievedPayment.getId());
-        verify(feesPaymentRepository, times(1)).findByIdAndDeletedAtIsNull(paymentId);
+        verify(feesPaymentRepository, times(1)).findByIdAndIsDeletedIsFalse(paymentId);
     }
 
     @Test
     void testGetByIdNotFound() {
         String nonExistentPaymentId = "99999"; // Assuming this ID does not exist in the database
-        when(feesPaymentRepository.findByIdAndDeletedAtIsNull(nonExistentPaymentId)).thenReturn(Optional.empty());
+        when(feesPaymentRepository.findByIdAndIsDeletedIsFalse(nonExistentPaymentId)).thenReturn(Optional.empty());
 
         assertThrows(FeesPaymentNotFoundException.class, () -> feesPaymentService.getById(nonExistentPaymentId));
     }
@@ -91,7 +89,7 @@ class FeesPaymentServiceTest {
         String paymentId = "12345";
         FeesPayment paymentToDelete = new FeesPayment();
         paymentToDelete.setId(paymentId);
-        when(feesPaymentRepository.findByIdAndDeletedAtIsNull(paymentId)).thenReturn(Optional.of(paymentToDelete));
+        when(feesPaymentRepository.findByIdAndIsDeletedIsFalse(paymentId)).thenReturn(Optional.of(paymentToDelete));
 
         feesPaymentService.delete(paymentId);
 
@@ -103,7 +101,7 @@ class FeesPaymentServiceTest {
     @Test
     void testDeleteNotFound() {
         String nonExistentPaymentId = "99999"; // Assuming this ID does not exist in the database
-        when(feesPaymentRepository.findByIdAndDeletedAtIsNull(nonExistentPaymentId)).thenReturn(Optional.empty());
+        when(feesPaymentRepository.findByIdAndIsDeletedIsFalse(nonExistentPaymentId)).thenReturn(Optional.empty());
 
         assertThrows(FeesPaymentNotFoundException.class, () -> feesPaymentService.delete(nonExistentPaymentId));
     }
@@ -113,12 +111,12 @@ class FeesPaymentServiceTest {
         List<FeesPayment> payments = new ArrayList<>();
         payments.add(new FeesPayment());
         payments.add(new FeesPayment());
-        when(feesPaymentRepository.findAllByDeletedAtIsNull()).thenReturn(payments);
+        when(feesPaymentRepository.findAllByIsDeletedIsFalse()).thenReturn(payments);
 
         List<FeesPayment> retrievedPayments = feesPaymentService.getAll();
 
         assertNotNull(retrievedPayments);
         assertEquals(2, retrievedPayments.size());
-        verify(feesPaymentRepository, times(1)).findAllByDeletedAtIsNull();
+        verify(feesPaymentRepository, times(1)).findAllByIsDeletedIsFalse();
     }
 }

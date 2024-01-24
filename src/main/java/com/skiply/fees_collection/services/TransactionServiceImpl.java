@@ -1,11 +1,9 @@
 package com.skiply.fees_collection.services;
 
-import com.skiply.fees_collection.entities.Card;
 import com.skiply.fees_collection.exceptions.TransactionNotFoundException;
 import com.skiply.fees_collection.repositories.TransactionRepository;
 import com.skiply.fees_collection.entities.Transaction;
 import com.skiply.fees_collection.entities.TransactionStatus;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +22,7 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Optional<Transaction> getById(String id) {
-        return transactionRepository.findByIdAndDeletedAtIsNull(id);
+        return transactionRepository.findByIdAndIsDeletedIsFalse(id);
     }
 
     @Override
@@ -53,26 +51,5 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
     @Override
-    public List<Transaction> getAll() { return transactionRepository.findAllByDeletedAtIsNull(); }
-
-//    @Override
-//    public List<Transaction> getAll(String studentId, String paymentModeId) {
-//        return transactionRepository.findAllByDeletedAtIsNull(buildSpecification(studentId, paymentModeId));
-//    }
-//
-//    private Specification<Transaction> buildSpecification(String studentId, String paymentModeId) {
-//        return (root, query, criteriaBuilder) -> {
-//            List<Predicate> predicates = new ArrayList<>();
-//
-//            if (studentId != null) {
-//                predicates.add(criteriaBuilder.equal(root.get("studentId"), studentId));
-//            }
-//
-//            if (paymentModeId != null) {
-//                predicates.add(criteriaBuilder.equal(root.get("paymentModeId"), paymentModeId));
-//            }
-//
-//            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
-//        };
-//    }
+    public List<Transaction> getAll() { return transactionRepository.findAllByIsDeletedIsFalse(); }
 }

@@ -9,7 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface CardRepository extends JpaRepository<Card, String> {
-    List<Card> findAllByDeletedAtIsNull();
-    Optional<Card> findByIdAndDeletedAtIsNull(String cardId);
-
+    List<Card> findAllByIsDeletedIsFalse();
+    Optional<Card> findByIdAndIsDeletedIsFalse(String cardId);
 }

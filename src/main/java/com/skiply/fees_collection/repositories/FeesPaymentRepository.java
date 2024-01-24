@@ -10,7 +10,6 @@ import java.util.Optional;
 @Repository
 public interface FeesPaymentRepository extends JpaRepository<FeesPayment, String> {
     List<FeesPayment> findByTransactionId(String transactionId);
-    List<FeesPayment> findAllByDeletedAtIsNull();
-    Optional<FeesPayment> findByIdAndDeletedAtIsNull(String feesPaymentId);
-
+    List<FeesPayment> findAllByIsDeletedIsFalse();
+    Optional<FeesPayment> findByIdAndIsDeletedIsFalse(String feesPaymentId);
 }

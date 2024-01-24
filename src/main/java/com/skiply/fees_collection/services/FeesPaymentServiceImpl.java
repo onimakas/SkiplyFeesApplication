@@ -13,7 +13,6 @@ import java.util.Optional;
 @Service
 @Transactional
 public class FeesPaymentServiceImpl implements FeesPaymentService {
-
     private final FeesPaymentRepository feesPaymentRepository;
 
     public FeesPaymentServiceImpl(FeesPaymentRepository feesPaymentRepository) {
@@ -22,7 +21,7 @@ public class FeesPaymentServiceImpl implements FeesPaymentService {
 
     @Override
     public FeesPayment getById(String id) {
-        return feesPaymentRepository.findByIdAndDeletedAtIsNull(id)
+        return feesPaymentRepository.findByIdAndIsDeletedIsFalse(id)
                 .orElseThrow(() -> new FeesPaymentNotFoundException("FeePayments not found with id: " + id));
     }
 
@@ -41,7 +40,7 @@ public class FeesPaymentServiceImpl implements FeesPaymentService {
 
     @Override
     public void delete(String id) {
-        Optional<FeesPayment> optionalFeesPayment = feesPaymentRepository.findByIdAndDeletedAtIsNull(id);
+        Optional<FeesPayment> optionalFeesPayment = feesPaymentRepository.findByIdAndIsDeletedIsFalse(id);
         if (optionalFeesPayment.isPresent()) {
             FeesPayment feesPayment = optionalFeesPayment.get();
             feesPayment.setIsDeleted(true);
@@ -55,6 +54,6 @@ public class FeesPaymentServiceImpl implements FeesPaymentService {
 
     @Override
     public List<FeesPayment> getAll() {
-        return feesPaymentRepository.findAllByDeletedAtIsNull();
+        return feesPaymentRepository.findAllByIsDeletedIsFalse();
     }
 }

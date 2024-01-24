@@ -29,17 +29,17 @@ public class FeesServiceImpl implements FeesService {
 
     @Override
     public List<Fees> getAllFees() {
-        return feesRepository.findAllByDeletedAtIsNull();
+        return feesRepository.findAllByIsDeletedIsFalse();
     }
 
     @Override
     public Optional<Fees> getFeesById(String feesId) {
-        return feesRepository.findByIdAndDeletedAtIsNull(feesId);
+        return feesRepository.findByIdAndIsDeletedIsFalse(feesId);
     }
 
     @Override
     public Fees updateFees(String feesId, Fees feesDetails) {
-        Optional<Fees> optionalFees = feesRepository.findByIdAndDeletedAtIsNull(feesId);
+        Optional<Fees> optionalFees = feesRepository.findByIdAndIsDeletedIsFalse(feesId);
         if (optionalFees.isPresent()) {
             Fees fees = optionalFees.get();
             fees.setSchoolId(feesDetails.getSchoolId());
@@ -62,7 +62,7 @@ public class FeesServiceImpl implements FeesService {
 
     @Override
     public void deleteFees(String feesId) {
-        Optional<Fees> optionalFees = feesRepository.findByIdAndDeletedAtIsNull(feesId);
+        Optional<Fees> optionalFees = feesRepository.findByIdAndIsDeletedIsFalse(feesId);
         if (optionalFees.isPresent()) {
             Fees fees = optionalFees.get();
             fees.setIsDeleted(true);

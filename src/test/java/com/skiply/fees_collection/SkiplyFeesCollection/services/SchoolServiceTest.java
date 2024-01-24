@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.skiply.fees_collection.exceptions.SchoolNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -53,13 +52,13 @@ class SchoolServiceTest {
         String schoolId = "12345";
         School school = new School();
         school.setSchoolId(schoolId);
-        when(schoolRepository.findBySchoolIdAndDeletedAtIsNull(schoolId)).thenReturn(Optional.of(school));
+        when(schoolRepository.findBySchoolIdAndIsDeletedIsFalse(schoolId)).thenReturn(Optional.of(school));
 
         Optional<School> retrievedSchool = schoolService.getSchoolById(schoolId);
 
         assertTrue(retrievedSchool.isPresent());
         assertEquals(schoolId, retrievedSchool.get().getSchoolId());
-        verify(schoolRepository, times(1)).findBySchoolIdAndDeletedAtIsNull(schoolId);
+        verify(schoolRepository, times(1)).findBySchoolIdAndIsDeletedIsFalse(schoolId);
     }
 
     @Test
@@ -67,13 +66,13 @@ class SchoolServiceTest {
         List<School> schools = new ArrayList<>();
         schools.add(new School());
         schools.add(new School());
-        when(schoolRepository.findAllByDeletedAtIsNull()).thenReturn(schools);
+        when(schoolRepository.findAllByIsDeletedIsFalse()).thenReturn(schools);
 
         List<School> retrievedSchools = schoolService.getAllSchools();
 
         assertNotNull(retrievedSchools);
         assertEquals(2, retrievedSchools.size());
-        verify(schoolRepository, times(1)).findAllByDeletedAtIsNull();
+        verify(schoolRepository, times(1)).findAllByIsDeletedIsFalse();
     }
 
     @Test
@@ -81,7 +80,7 @@ class SchoolServiceTest {
         String schoolId = "12345";
         School schoolToDelete = new School();
         schoolToDelete.setSchoolId(schoolId);
-        when(schoolRepository.findBySchoolIdAndDeletedAtIsNull(schoolId)).thenReturn(Optional.of(schoolToDelete));
+        when(schoolRepository.findBySchoolIdAndIsDeletedIsFalse(schoolId)).thenReturn(Optional.of(schoolToDelete));
 
         schoolService.deleteSchool(schoolId);
 
@@ -93,7 +92,7 @@ class SchoolServiceTest {
     @Test
     void testDeleteSchoolNotFound() {
         String nonExistentSchoolId = "99999"; // Assuming this ID does not exist in the database
-        when(schoolRepository.findBySchoolIdAndDeletedAtIsNull(nonExistentSchoolId)).thenReturn(Optional.empty());
+        when(schoolRepository.findBySchoolIdAndIsDeletedIsFalse(nonExistentSchoolId)).thenReturn(Optional.empty());
 
         assertThrows(SchoolNotFoundException.class, () -> schoolService.deleteSchool(nonExistentSchoolId));
     }

@@ -52,13 +52,13 @@ class FeesServiceTest {
         String feesId = "12345";
         Fees fees = new Fees();
         fees.setId(feesId);
-        when(feesRepository.findByIdAndDeletedAtIsNull(feesId)).thenReturn(Optional.of(fees));
+        when(feesRepository.findByIdAndIsDeletedIsFalse(feesId)).thenReturn(Optional.of(fees));
 
         Optional<Fees> retrievedFees = feesService.getFeesById(feesId);
 
         assertTrue(retrievedFees.isPresent());
         assertEquals(feesId, retrievedFees.get().getId());
-        verify(feesRepository, times(1)).findByIdAndDeletedAtIsNull(feesId);
+        verify(feesRepository, times(1)).findByIdAndIsDeletedIsFalse(feesId);
     }
 
     @Test
@@ -66,13 +66,13 @@ class FeesServiceTest {
         List<Fees> feesList = new ArrayList<>();
         feesList.add(new Fees());
         feesList.add(new Fees());
-        when(feesRepository.findAllByDeletedAtIsNull()).thenReturn(feesList);
+        when(feesRepository.findAllByIsDeletedIsFalse()).thenReturn(feesList);
 
         List<Fees> retrievedFees = feesService.getAllFees();
 
         assertNotNull(retrievedFees);
         assertEquals(2, retrievedFees.size());
-        verify(feesRepository, times(1)).findAllByDeletedAtIsNull();
+        verify(feesRepository, times(1)).findAllByIsDeletedIsFalse();
     }
 
     @Test
@@ -85,13 +85,13 @@ class FeesServiceTest {
         updatedFees.setId(feesId);
         updatedFees.setSchoolId("UpdatedSchoolId");
 
-        when(feesRepository.findByIdAndDeletedAtIsNull(feesId)).thenReturn(Optional.of(existingFees));
+        when(feesRepository.findByIdAndIsDeletedIsFalse(feesId)).thenReturn(Optional.of(existingFees));
         when(feesRepository.save(any())).thenReturn(updatedFees);
 
         Fees updatedResult = feesService.updateFees(feesId, updatedFees);
 
         assertEquals("UpdatedSchoolId", updatedResult.getSchoolId());
-        verify(feesRepository, times(1)).findByIdAndDeletedAtIsNull(feesId);
+        verify(feesRepository, times(1)).findByIdAndIsDeletedIsFalse(feesId);
         verify(feesRepository, times(1)).save(any());
     }
 
@@ -100,7 +100,7 @@ class FeesServiceTest {
         String nonExistentFeesId = "99999";
         Fees updatedFees = new Fees();
 
-        when(feesRepository.findByIdAndDeletedAtIsNull(nonExistentFeesId)).thenReturn(Optional.empty());
+        when(feesRepository.findByIdAndIsDeletedIsFalse(nonExistentFeesId)).thenReturn(Optional.empty());
 
         assertThrows(FeesNotFoundException.class, () -> feesService.updateFees(nonExistentFeesId, updatedFees));
     }
@@ -111,7 +111,7 @@ class FeesServiceTest {
         Fees feesToDelete = new Fees();
         feesToDelete.setId(feesId);
 
-        when(feesRepository.findByIdAndDeletedAtIsNull(feesId)).thenReturn(Optional.of(feesToDelete));
+        when(feesRepository.findByIdAndIsDeletedIsFalse(feesId)).thenReturn(Optional.of(feesToDelete));
 
         feesService.deleteFees(feesId);
 
@@ -124,7 +124,7 @@ class FeesServiceTest {
     void testDeleteFeesNotFound() {
         String nonExistentFeesId = "99999";
 
-        when(feesRepository.findByIdAndDeletedAtIsNull(nonExistentFeesId)).thenReturn(Optional.empty());
+        when(feesRepository.findByIdAndIsDeletedIsFalse(nonExistentFeesId)).thenReturn(Optional.empty());
 
         assertThrows(FeesNotFoundException.class, () -> feesService.deleteFees(nonExistentFeesId));
     }
